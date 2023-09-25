@@ -5,6 +5,7 @@ https://datasheets.raspberrypi.com/picow/connecting-to-the-internet-with-pico-w.
 
 import json
 from machine import Pin
+import network
 from time import sleep
 
 
@@ -24,6 +25,10 @@ if __name__ == '__main__':
     ssid = get_env_value('SSID_NAME')
     key = get_env_value('SSID_KEY')
     if ssid and key:
-        blink()
+        wlan = network.WLAN(network.STA_IF)
+        wlan.active(True)
+        wlan.connect(ssid, key)
+        if wlan.isconnected():
+            blink()
     else:
         print('Network credentials not found; check `env.json`')
