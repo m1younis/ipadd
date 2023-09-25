@@ -1,0 +1,7 @@
+# Editors
+.idea/
+.vscode/
+.micropico
+
+# Environments
+env.json
