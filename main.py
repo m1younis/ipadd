@@ -23,7 +23,10 @@ def get_env_value(key):
 
 
 def get_raw_response(url):
-    return urequests.get(url).json()
+    response = urequests.get(url)
+    meta = response.json()
+    response.close()
+    return meta
 
 
 if __name__ == '__main__':
