@@ -7,6 +7,7 @@ import json
 from machine import Pin
 import network
 from time import sleep
+import urequests
 
 
 def blink():
@@ -21,6 +22,10 @@ def get_env_value(key):
         return json.load(f)[key]
 
 
+def get_raw_response(url):
+    return urequests.get(url).json()
+
+
 if __name__ == '__main__':
     ssid = get_env_value('SSID_NAME')
     key = get_env_value('SSID_KEY')
@@ -29,6 +34,6 @@ if __name__ == '__main__':
         wlan.active(True)
         wlan.connect(ssid, key)
         if wlan.isconnected():
-            blink()
+            print(get_raw_response('http://date.jsontest.com'))
     else:
         print('Network credentials not found; check `env.json`')
