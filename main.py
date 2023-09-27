@@ -22,8 +22,9 @@ if __name__ == '__main__':
         wlan = network.WLAN(network.STA_IF)
         wlan.active(True)
         wlan.connect(ssid, key)
-        print(
-            helpers.get_raw_response('http://date.jsontest.com') if wlan.isconnected() \
-            else 'Network connection error; check supplied credentials')
+        if wlan.isconnected() and wlan.status() == 3:
+            print(helpers.get_raw_response('http://date.jsontest.com'))
+        else:
+            print('Network connection error; check supplied credentials')
     else:
         print('Network credentials not found; check `env.json`')
