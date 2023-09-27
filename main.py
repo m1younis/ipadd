@@ -23,7 +23,7 @@ if __name__ == '__main__':
         wlan.active(True)
         wlan.connect(ssid, key)
         if wlan.isconnected() and wlan.status() == 3:
-            print(helpers.get_raw_response('http://date.jsontest.com'))
+            print(helpers.get_salaah_meta())
         else:
             print('Network connection error; check supplied credentials')
     else:
