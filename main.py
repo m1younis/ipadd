@@ -1,13 +1,11 @@
-'''
-Project entry point; official Raspberry Pi datasheet referenced:
+"""Project entry point; official Raspberry Pi datasheet referenced:
 https://datasheets.raspberrypi.com/picow/connecting-to-the-internet-with-pico-w.pdf
-'''
+"""
 
-import json
+import helpers
 from machine import Pin
 import network
 from time import sleep
-import urequests
 
 
 def blink():
@@ -17,26 +15,15 @@ def blink():
         sleep(0.5)
 
 
-def get_env_value(key):
-    with open('env.json', encoding='utf-8') as f:
-        return json.load(f)[key]
-
-
-def get_raw_response(url):
-    response = urequests.get(url)
-    meta = response.json()
-    response.close()
-    return meta
-
-
 if __name__ == '__main__':
-    ssid = get_env_value('SSID_NAME')
-    key = get_env_value('SSID_KEY')
+    ssid = helpers.get_env_value('SSID_NAME')
+    key = helpers.get_env_value('SSID_KEY')
     if ssid and key:
         wlan = network.WLAN(network.STA_IF)
         wlan.active(True)
         wlan.connect(ssid, key)
-        if wlan.isconnected():
-            print(get_raw_response('http://date.jsontest.com'))
+        print(
+            helpers.get_raw_response('http://date.jsontest.com') if wlan.isconnected() \
+            else 'Network connection error; check supplied credentials')
     else:
         print('Network credentials not found; check `env.json`')
