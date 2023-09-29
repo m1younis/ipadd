@@ -23,8 +23,10 @@ if __name__ == '__main__':
         wlan.active(True)
         wlan.connect(ssid, key)
         if wlan.isconnected() and wlan.status() == 3:
+            wlan.scan()     # Empty scan
             print(helpers.get_salaah_meta())
             print(helpers.get_atmospheric_meta())
+            print(helpers.get_network_meta(wlan))
         else:
             print('Network connection error; check supplied credentials')
     else:
