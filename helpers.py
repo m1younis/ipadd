@@ -2,6 +2,8 @@
 
 from lib.bme280 import BME280
 from machine import Pin, I2C
+from network import WLAN
+from ubinascii import hexlify
 import ujson
 import urequests
 
@@ -51,3 +53,23 @@ def get_atmospheric_meta():
         (exfeels, inpres),
         (expres, inhumd),
         (exhumd, weather['clouds']['all']))
+
+
+def decode_bin_mac(raw):
+    return hexlify(raw, '-').decode()
+
+
+def get_network_auth(val):
+    if val == 0:
+        return 'Open'
+    elif val == 1:
+        return 'WEP'
+    elif val == 2:
+        return 'WPA-PSK'
+    elif val == 3:
+        return 'WPA2-PSK'
+    # https://github.com/orgs/micropython/discussions/10931
+    elif val == 4 or val == 5:
+        return 'WPA/WPA2-PSK'
+
+    return 'Unknown'
