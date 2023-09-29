@@ -73,3 +73,17 @@ def get_network_auth(val):
         return 'WPA/WPA2-PSK'
 
     return 'Unknown'
+
+
+def get_network_meta(wlan):
+    if wlan.isconnected() and wlan.status() == 3:
+        ip, _, rouip, _ = wlan.ifconfig()
+        for ap in wlan.scan():
+            if ap[0].decode() == wlan.config('ssid'):
+                return (
+                    (ip, rouip),
+                    (decode_bin_mac(wlan.config('mac')), decode_bin_mac(ap[1])),
+                    (wlan.config('hostname'), get_network_auth(ap[4])),
+                    ap[3])
+
+    return ()
