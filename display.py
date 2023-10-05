@@ -57,8 +57,9 @@ PRAYERS = (
 
 
 def render_title(lcd):
+    # Random title design chosen; white excluded from colour options
     title = list(enumerate(urandom.choice(TITLES).splitlines()))[1:]
-    colour = urandom.choice(COLOURS[1:])    # White excluded from possible choices
+    colour = urandom.choice(COLOURS[1:])
     for i, line in title:
         lcd.draw_text(8, (i * 9), line, FONTS[1], colour)
 
@@ -68,9 +69,37 @@ def render_title(lcd):
 def render_datetime(lcd, ypos):
     now = utime.localtime()
     lcd.draw_text(
-        164,
+        166,
         28 if ypos == 45 else 22,
         f'{WEEKDAYS[now[6]]}, {now[2]:02d}-{now[1]:02d}-{now[0]}'
         + f' {now[3]:02d}:{now[4]:02d}:{now[5]:02d}',
         FONTS[1],
         COLOURS[0])
+
+
+def pad_header(name, sep='~'):
+    return f' {name} {sep * (44 - len(name))}'
+
+
+def render_salaah_meta(meta, lcd, ypos, on_start=True):
+    if on_start:
+        lcd.draw_text(0, ypos + 16, pad_header('SALAAH'), FONTS[0], COLOURS[0])
+
+    # Abstract `str.rjust` implementation for right-alignment on strings
+    rjust = lambda s: s if len(s) == 7 else ' ' * (7 - len(s)) + s
+
+    ypos += 30
+    for prayers, times in zip(PRAYERS, meta):
+        lcd.draw_text(
+            40,
+            ypos,
+            f'{rjust(prayers[0])}: {times[0]}',
+            FONTS[1],
+            COLOURS[0])
+        lcd.draw_text(
+            180,
+            ypos,
+            f'{rjust(prayers[1])}: {times[1]}',
+            FONTS[1],
+            COLOURS[0])
+        ypos += 12
