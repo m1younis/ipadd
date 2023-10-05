@@ -49,9 +49,13 @@ if __name__ == '__main__':
         if wlan.isconnected() and wlan.status() == 3:
             wlan.scan()     # Empty scan
 
+            # Information is fetched prior to being displayed
+            prayers = helpers.get_salaah_meta()
+
             lcd = initialise_lcd()
             # Title height determines positioning of datetime and info
             start_ypos = display.render_title(lcd)
+            display.render_salaah_meta(prayers, lcd, start_ypos)
 
             while True:
                 display.render_datetime(lcd, start_ypos)
