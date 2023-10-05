@@ -81,12 +81,13 @@ def pad_header(name, sep='~'):
     return f' {name} {sep * (44 - len(name))}'
 
 
+def rjust(s, max_len=7):
+    return s if len(s) == max_len else ' ' * (max_len - len(s)) + s
+
+
 def render_salaah_meta(meta, lcd, ypos, on_start=True):
     if on_start:
         lcd.draw_text(0, ypos + 16, pad_header('SALAAH'), FONTS[0], COLOURS[0])
-
-    # Abstract `str.rjust` implementation for right-alignment on strings
-    rjust = lambda s: s if len(s) == 7 else ' ' * (7 - len(s)) + s
 
     ypos += 30
     for prayers, times in zip(PRAYERS, meta):
@@ -103,3 +104,8 @@ def render_salaah_meta(meta, lcd, ypos, on_start=True):
             FONTS[1],
             COLOURS[0])
         ypos += 12
+
+
+def generate_progress_bar(val, width=10):
+    fill = round(val / 100 * width)
+    return f"<{'*' * fill}" + f"{'_' * (width - fill)}>"
