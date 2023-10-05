@@ -20,14 +20,35 @@ def get_raw_response(url):
     return meta
 
 
-def get_salaah_meta():
-    meta = get_raw_response(
-        f"https://dailyprayer.abdulrcs.repl.co/api/{get_env_value('CITY_NAME')}")
+def strf_salaah_time(raw):
+    time, period = raw.split()
+    hh, mm = time.split(':')
+    hh = int(hh)
+    if period == 'am' and hh == 12:
+        hh = 0
+    elif period == 'pm' and hh != 12:
+        hh += 12
 
-    return (
-        (meta['today']['Fajr'], meta['today']['Asr']),
-        (meta['today']['Sunrise'], meta['today']['Maghrib']),
-        (meta['today']['Dhuhr'], meta['today']['Isha\'a']))
+    return f'{hh:02d}:{mm}'
+
+
+def get_salaah_meta():
+    city = get_env_value('CITY_NAME')
+    try:
+        meta = get_raw_response(f'https://dailyprayer.abdulrcs.repl.co/api/{city}')
+        return (
+            (meta['today']['Fajr'], meta['today']['Asr']),
+            (meta['today']['Sunrise'], meta['today']['Maghrib']),
+            (meta['today']['Dhuhr'], meta['today']['Isha\'a']))
+    except Exception as e:
+        meta = get_raw_response(f'https://muslimsalat.com/{city}.json')['items'][0]
+        meta = {
+            k: v for k, v in meta.items() if k != 'date_for'
+        }
+        return (
+            (strf_salaah_time(meta['fajr']), strf_salaah_time(meta['asr'])),
+            (strf_salaah_time(meta['shurooq']), strf_salaah_time(meta['maghrib'])),
+            (strf_salaah_time(meta['dhuhr']), strf_salaah_time(meta['isha'])))
 
 
 def get_atmospheric_meta():
