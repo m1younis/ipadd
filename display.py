@@ -2,6 +2,8 @@
 
 from lib.ili9341 import color565
 from lib.xglcd_font import XglcdFont
+import urandom
+import utime
 
 
 COLOURS = (
@@ -52,3 +54,23 @@ WEEKDAYS = (
 
 PRAYERS = (
     ('Fajr', 'Asr'), ('Sunrise', 'Maghrib'), ('Dhuhr', 'Ishaa'))
+
+
+def render_title(lcd):
+    title = list(enumerate(urandom.choice(TITLES).splitlines()))[1:]
+    colour = urandom.choice(COLOURS[1:])    # White excluded from possible choices
+    for i, line in title:
+        lcd.draw_text(8, (i * 9), line, FONTS[1], colour)
+
+    return len(title) * 9
+
+
+def render_datetime(lcd, ypos):
+    now = utime.localtime()
+    lcd.draw_text(
+        164,
+        28 if ypos == 45 else 22,
+        f'{WEEKDAYS[now[6]]}, {now[2]:02d}-{now[1]:02d}-{now[0]}'
+        + f' {now[3]:02d}:{now[4]:02d}:{now[5]:02d}',
+        FONTS[1],
+        COLOURS[0])
