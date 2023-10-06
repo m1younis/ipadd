@@ -51,11 +51,15 @@ if __name__ == '__main__':
 
             # Information is fetched prior to being displayed
             prayers = helpers.get_salaah_meta()
+            atmosphere = helpers.get_atmospheric_meta()
+            network = helpers.get_network_meta(wlan)
 
             lcd = initialise_lcd()
             # Title height determines positioning of datetime and info
             start_ypos = display.render_title(lcd)
             display.render_salaah_meta(prayers, lcd, start_ypos)
+            display.render_atmospheric_meta(atmosphere, lcd, start_ypos)
+            display.render_network_meta(network, lcd, start_ypos)
 
             while True:
                 display.render_datetime(lcd, start_ypos)
