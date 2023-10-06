@@ -70,7 +70,7 @@ def render_datetime(lcd, ypos):
     now = utime.localtime()
     lcd.draw_text(
         166,
-        28 if ypos == 45 else 22,
+        28 if ypos == 45 else 24,
         f'{WEEKDAYS[now[6]]}, {now[2]:02d}-{now[1]:02d}-{now[0]}'
         + f' {now[3]:02d}:{now[4]:02d}:{now[5]:02d}',
         FONTS[1],
@@ -91,21 +91,46 @@ def render_salaah_meta(meta, lcd, ypos, on_start=True):
 
     ypos += 30
     for prayers, times in zip(PRAYERS, meta):
-        lcd.draw_text(
-            40,
-            ypos,
-            f'{rjust(prayers[0])}: {times[0]}',
-            FONTS[1],
-            COLOURS[0])
-        lcd.draw_text(
-            180,
-            ypos,
-            f'{rjust(prayers[1])}: {times[1]}',
-            FONTS[1],
-            COLOURS[0])
+        lcd.draw_text(40, ypos, f'{rjust(prayers[0])}: {times[0]}', FONTS[1], COLOURS[0])
+        lcd.draw_text(180, ypos, f'{rjust(prayers[1])}: {times[1]}', FONTS[1], COLOURS[0])
         ypos += 12
 
 
 def generate_progress_bar(val, width=10):
     fill = round(val / 100 * width)
     return f"<{'*' * fill}" + f"{'_' * (width - fill)}>"
+
+
+def render_atmospheric_meta(meta, lcd, ypos, on_start=True):
+    if on_start:
+        lcd.draw_text(0, ypos + 68, pad_header('ATMOSPHERE'), FONTS[0], COLOURS[0])
+
+    lcd.draw_text(10, ypos + 82, f"{rjust('exTemp')}: {meta[0][0]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(180, ypos + 82, f"{rjust('inTemp')}: {meta[0][1]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(40, ypos + 94, f"{rjust('exFeels')}: {meta[1][0]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(180, ypos + 94, f"{rjust('inPres')}: {meta[1][1]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(40, ypos + 106, f"{rjust('exPres')}: {meta[2][0]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(180, ypos + 106, f"{rjust('inHumd')}: {meta[2][1]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(40, ypos + 118, f"{rjust('exHumd')}: {meta[3][0]}", FONTS[1], COLOURS[0])
+
+    clouds = meta[3][1]
+    lcd.draw_text(144, ypos + 118,
+        f"{rjust('Clds')}: {clouds}% / {generate_progress_bar(clouds)}", FONTS[1], COLOURS[0])
+
+
+def render_network_meta(meta, lcd, ypos, on_start=True):
+    if on_start:
+        lcd.draw_text(0, ypos + 132, pad_header('NETCONFIG'), FONTS[0], COLOURS[0])
+
+    lcd.draw_text(6, ypos + 146,
+        f"{rjust('locIP', max_len=6)}: {meta[0][0]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(160, ypos + 146, f"{rjust('rouIP')}: {meta[0][1]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(6, ypos + 158, f'locMac: {meta[1][0]}', FONTS[1], COLOURS[0])
+    lcd.draw_text(160, ypos + 158, f"{rjust('rouMac')}: {meta[1][1]}", FONTS[1], COLOURS[0])
+    lcd.draw_text(28, ypos + 170, f'hostname: {meta[2][0]}', FONTS[1], COLOURS[0])
+    lcd.draw_text(160, ypos + 170, f'netAuth: {meta[2][1]}', FONTS[1], COLOURS[0])
+
+    rssi = meta[3]
+    rssi_pct = min(max(2 * (rssi + 100), 0), 100)    # https://stackoverflow.com/questions/15797920
+    lcd.draw_text(40, ypos + 182,
+        f'Signal: {rssi}dBm / {generate_progress_bar(rssi_pct, width=20)}', FONTS[1], COLOURS[0])
