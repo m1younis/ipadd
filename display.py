@@ -10,7 +10,6 @@ COLOURS = (
     color565(255, 255, 255),  # White
     color565(0, 255, 255),    # Aqua
     color565(0, 0, 255),      # Blue
-    color565(128, 255, 255),  # Cyan
     color565(0, 128, 0),      # Green (dark)
     color565(255, 0, 128),    # Pink (dark)
     color565(0, 255, 0),      # Green
@@ -66,13 +65,16 @@ def render_title(lcd):
     return len(title) * 9
 
 
+def strf_datetime(y, m, d, hh, mm, ss, wd=None):
+    s = f'{d:02d}-{m:02d}-{y:02d} {hh:02d}:{mm:02d}:{ss:02d}'
+    return s if not wd else f'{WEEKDAYS[wd]}, ' + s
+
+
 def render_datetime(lcd, ypos):
-    now = utime.localtime()
     lcd.draw_text(
         166,
         28 if ypos == 45 else 24,
-        f'{WEEKDAYS[now[6]]}, {now[2]:02d}-{now[1]:02d}-{now[0]}'
-        + f' {now[3]:02d}:{now[4]:02d}:{now[5]:02d}',
+        strf_datetime(*utime.localtime()[:7]),
         FONTS[1],
         COLOURS[0])
 
