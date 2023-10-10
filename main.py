@@ -49,21 +49,53 @@ if __name__ == '__main__':
         if wlan.isconnected() and wlan.status() == 3:
             wlan.scan()     # Empty scan
 
-            # Information is fetched prior to being displayed
+            # Information retrieved prior to being displayed
             prayers = helpers.get_salaah_meta()
             atmosphere = helpers.get_atmospheric_meta()
             network = helpers.get_network_meta(wlan)
+            update_prayers = update_rem = False
 
             lcd = initialise_lcd()
             # Title height determines positioning of datetime and info
             start_ypos = display.render_title(lcd)
             display.render_salaah_meta(prayers, lcd, start_ypos)
+            # Initial prayers display date recorded to determine next update
+            prayers_last_updated = utime.localtime()[:3]
             display.render_atmospheric_meta(atmosphere, lcd, start_ypos)
             display.render_network_meta(network, lcd, start_ypos)
 
             while True:
                 display.render_datetime(lcd, start_ypos)
+                # Prayer times updated at the start of each day
+                # Atmosphere and network sections refreshed every 5 mins of each hour
+                *today, _, mm, ss = utime.localtime()[:6]
+                datetime = display.strf_datetime(*today, hh, mm, ss)
+                today = tuple(today)
+                if prayers_last_updated != today:
+                    update_prayers = True
+                    prayers = helpers.get_salaah_meta()
+                if not (mm % 5 or ss):
+                    update_rem = True
+                    atmosphere = helpers.get_atmospheric_meta()
+                    network = helpers.get_network_meta(wlan)
+
+                utime.sleep(0.1)
+
+                if update_prayers:
+                    display.render_salaah_meta(prayers, lcd, start_ypos, on_start=False)
+                    print(f'({datetime}) [info] Prayer times update')
+                    prayers_last_updated = today
+                    update_prayers = False
+                if update_rem:
+                    display.render_atmospheric_meta(atmosphere, lcd, ypos, on_start=False)
+                    display.render_network_meta(network, lcd, ypos, on_start=False)
+                    print(f'({datetime}) [info] Atmosphere and network meta refresh')
+                    update_rem = False
         else:
-            print('Network connection error; check supplied credentials')
+            print(
+                f'({display.strf_datetime(*utime.localtime()[:6])})'
+                + ' [error] Network connection failed; check supplied credentials')
     else:
-        print('Network credentials not found; check `env.json`')
+        print(
+            f'({display.strf_datetime(*utime.localtime()[:6])})'
+            + ' [error] Network credentials not found; check `env.json`')
