@@ -56,7 +56,7 @@ def get_salaah_meta():
             (strf_salaah_time(meta['dhuhr']), strf_salaah_time(meta['isha'])))
 
 
-def strf_sensor_val(raw, units, prec=False):
+def strf_sensor_value(raw, units, prec=False):
     val = float(raw.replace(units, ''))
     return str(round(val) if not prec else round(val, 1)) +\
         (units.lower if units == 'C' else units)
@@ -76,9 +76,9 @@ def get_atmospheric_meta():
 
     # BME280 sensor readings (internal atmosphere)
     intemp, inpres, inhumd = BME280(i2c=I2C(0, scl=Pin(1), sda=Pin(0))).values
-    intemp = strf_sensor_val(intemp, 'C', prec=True)
-    inpres = strf_sensor_val(inpres, 'hPa')
-    inhumd = strf_sensor_val(inhumd, '%')
+    intemp = strf_sensor_value(intemp, 'C', prec=True)
+    inpres = strf_sensor_value(inpres, 'hPa')
+    inhumd = strf_sensor_value(inhumd, '%')
 
     return (
         (extemp, intemp),
