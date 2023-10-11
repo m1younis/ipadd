@@ -15,6 +15,13 @@ def get_env_value(key):
         return ujson.load(f)[key]
 
 
+def logger(message, err=False):
+    print(
+        f'({strf_datetime(*utime.localtime()[:6])})',
+        '[error]' if err else '[info]',
+        message)
+
+
 def get_raw_response(url):
     response = urequests.get(url)
     meta = response.json()
@@ -43,9 +50,7 @@ def get_salaah_meta():
             (meta['today']['Sunrise'], meta['today']['Maghrib']),
             (meta['today']['Dhuhr'], meta['today']['Isha\'a']))
     except Exception as e:
-        print(
-            f'({strf_datetime(*utime.localtime()[:6])})'
-            + ' [error] Primary prayer times API down')
+        logger('Primary prayer times API down', err=True)
         meta = get_raw_response(f'https://muslimsalat.com/{city}.json')['items'][0]
         meta = {
             k: v for k, v in meta.items() if k != 'date_for'
@@ -118,7 +123,5 @@ def get_network_meta(wlan):
                     (wlan.config('hostname'), get_network_auth(ap[4])),
                     ap[3])
     else:
-        print(
-            f'({strf_datetime(*utime.localtime()[:6])})'
-            + ' [error] Network connection interrupted; status code: {wlan.status()}')
+        logger(f'Network connection interrupted; status code: {wlan.status()}', err=True)
         return ()
