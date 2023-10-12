@@ -40,6 +40,7 @@ def initialise_lcd():
 
 
 if __name__ == '__main__':
+    # Credentials loaded from `env.json` to establish network connection
     ssid = helpers.get_env_value('SSID_NAME')
     key = helpers.get_env_value('SSID_KEY')
     if ssid and key:
@@ -69,7 +70,6 @@ if __name__ == '__main__':
                 # Prayer times updated at the start of each day
                 # Atmosphere and network sections refreshed every 5 mins of each hour
                 *today, _, mm, ss = utime.localtime()[:6]
-                datetime = display.strf_datetime(*today, hh, mm, ss)
                 today = tuple(today)
                 if prayers_last_updated != today:
                     update_prayers = True
@@ -83,19 +83,15 @@ if __name__ == '__main__':
 
                 if update_prayers:
                     display.render_salaah_meta(prayers, lcd, start_ypos, on_start=False)
-                    print(f'({datetime}) [info] Prayer times update')
+                    helpers.logger('Prayer times update')
                     prayers_last_updated = today
                     update_prayers = False
                 if update_rem:
                     display.render_atmospheric_meta(atmosphere, lcd, ypos, on_start=False)
                     display.render_network_meta(network, lcd, ypos, on_start=False)
-                    print(f'({datetime}) [info] Atmosphere and network meta refresh')
+                    helpers.logger('Atmosphere and network meta refresh')
                     update_rem = False
         else:
-            print(
-                f'({display.strf_datetime(*utime.localtime()[:6])})'
-                + ' [error] Network connection failed; check supplied credentials')
+            helpers.logger('Network connection failed; check supplied credentials', err=True)
     else:
-        print(
-            f'({display.strf_datetime(*utime.localtime()[:6])})'
-            + ' [error] Network credentials not found; check `env.json`')
+        helpers.logger('Network credentials not found; check `env.json`', err=True)
