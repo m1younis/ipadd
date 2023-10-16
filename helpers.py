@@ -64,7 +64,7 @@ def get_salaah_meta():
 def strf_sensor_value(raw, units, prec=False):
     val = float(raw.replace(units, ''))
     return str(round(val) if not prec else round(val, 1)) +\
-        (units.lower if units == 'C' else units)
+        (units.lower() if units == 'C' else units)
 
 
 def get_atmospheric_meta():
