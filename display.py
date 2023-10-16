@@ -87,9 +87,17 @@ def rjust(s, max_len=7):
     return s if len(s) == max_len else ' ' * (max_len - len(s)) + s
 
 
+def clear_line(lcd, ypos):
+    lcd.draw_text(0, ypos, (' ' * 53), FONTS[1], COLOURS[0])
+
+
 def render_salaah_meta(meta, lcd, ypos, on_start=True):
     if on_start:
         lcd.draw_text(0, ypos + 16, pad_header('SALAAH'), FONTS[0], COLOURS[0])
+    else:
+        clear_line(lcd, ypos + 30)
+        clear_line(lcd, ypos + 42)
+        clear_line(lcd, ypos + 54)
 
     ypos += 30
     for prayers, times in zip(PRAYERS, meta):
@@ -106,6 +114,11 @@ def generate_progress_bar(val, width=10):
 def render_atmospheric_meta(meta, lcd, ypos, on_start=True):
     if on_start:
         lcd.draw_text(0, ypos + 68, pad_header('ATMOSPHERE'), FONTS[0], COLOURS[0])
+    else:
+        clear_line(lcd, ypos + 82)
+        clear_line(lcd, ypos + 94)
+        clear_line(lcd, ypos + 106)
+        clear_line(lcd, ypos + 118)
 
     lcd.draw_text(10, ypos + 82, f"{rjust('exTemp')}: {meta[0][0]}", FONTS[1], COLOURS[0])
     lcd.draw_text(180, ypos + 82, f"{rjust('inTemp')}: {meta[0][1]}", FONTS[1], COLOURS[0])
@@ -123,6 +136,11 @@ def render_atmospheric_meta(meta, lcd, ypos, on_start=True):
 def render_network_meta(meta, lcd, ypos, on_start=True):
     if on_start:
         lcd.draw_text(0, ypos + 132, pad_header('NETCONFIG'), FONTS[0], COLOURS[0])
+    else:
+        clear_line(lcd, ypos + 146)
+        clear_line(lcd, ypos + 158)
+        clear_line(lcd, ypos + 170)
+        clear_line(lcd, ypos + 182)
 
     lcd.draw_text(6, ypos + 146,
         f"{rjust('locIP', max_len=6)}: {meta[0][0]}", FONTS[1], COLOURS[0])
