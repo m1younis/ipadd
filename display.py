@@ -67,7 +67,7 @@ def render_title(lcd):
 
 def strf_datetime(y, m, d, hh, mm, ss, wd=None):
     s = f'{d:02d}-{m:02d}-{y:02d} {hh:02d}:{mm:02d}:{ss:02d}'
-    return s if not wd else f'{WEEKDAYS[wd]}, ' + s
+    return s if wd is None else f'{WEEKDAYS[wd]}, ' + s
 
 
 def render_datetime(lcd, ypos):
