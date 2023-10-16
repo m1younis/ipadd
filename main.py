@@ -21,19 +21,19 @@ def initialise_lcd():
     spi = SPI(
         0,
         baudrate=10000000,
-        polarity=1,
-        phase=1,
         bits=8,
         firstbit=SPI.MSB,
-        sck=Pin(18),
+        phase=1,
+        polarity=1,
         mosi=Pin(19),
+        sck=Pin(18),
         miso=Pin(16))
 
     return Display(
         spi,
-        dc=Pin(15),
         cs=Pin(17),
         rst=Pin(14),
+        dc=Pin(15),
         width=320,
         height=240,
         rotation=90)
@@ -57,7 +57,7 @@ if __name__ == '__main__':
             update_prayers = update_rem = False
 
             lcd = initialise_lcd()
-            # Title height determines positioning of datetime and info
+            # Title height determines vertical positioning of datetime and info
             start_ypos = display.render_title(lcd)
             display.render_salaah_meta(prayers, lcd, start_ypos)
             # Initial prayers display date recorded to determine next update
@@ -87,8 +87,8 @@ if __name__ == '__main__':
                     prayers_last_updated = today
                     update_prayers = False
                 if update_rem:
-                    display.render_atmospheric_meta(atmosphere, lcd, ypos, on_start=False)
-                    display.render_network_meta(network, lcd, ypos, on_start=False)
+                    display.render_atmospheric_meta(atmosphere, lcd, start_ypos, on_start=False)
+                    display.render_network_meta(network, lcd, start_ypos, on_start=False)
                     helpers.logger('Atmosphere and network meta refresh')
                     update_rem = False
         else:
