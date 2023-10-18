@@ -80,7 +80,7 @@ def get_atmospheric_meta():
     exhumd = f"{weather['main']['humidity']}%"
 
     # BME280 sensor readings (internal atmosphere)
-    intemp, inpres, inhumd = BME280(i2c=I2C(0, scl=Pin(1), sda=Pin(0))).values
+    intemp, inpres, inhumd = BME280(i2c=I2C(0, sda=Pin(4), scl=Pin(5))).values
     intemp = strf_sensor_value(intemp, 'C', prec=True)
     inpres = strf_sensor_value(inpres, 'hPa')
     inhumd = strf_sensor_value(inhumd, '%')
